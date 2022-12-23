@@ -3,7 +3,7 @@
 A helper module for attaching to a FastAPI app for user login using AWS Cognito.
 
 ## Usage
-To use add user login to a FastAPI app, simply create a manager and attach it to an app:
+To use add user login to a FastAPI app, simply create a manager and attach it to an app *(The only currently implemented flow is PKCE)*:
 
 ```python
 from fastapi import FastAPI
