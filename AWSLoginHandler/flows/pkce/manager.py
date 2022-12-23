@@ -43,23 +43,24 @@ class CodeResponse(BaseModel):
 class PKCEManager(OAuthManager):
     def __init__(
         self,
-        user_pool_domain: str,
         client_id: str,
         userpool_id: str,
         login_prefix: str = "/login",
         scopes: Optional[Dict[str, str]] = None,
     ):
-        self.user_pool_domain = user_pool_domain
-        self.authorization_url = f"{user_pool_domain}/oauth2/authorize"
-        self.token_url = f"{user_pool_domain}/oauth2/token"
-        self.refresh_url = f"{user_pool_domain}/oauth2/token"
-        self.user_info_url = f"{user_pool_domain}/oauth2/userInfo"
+        self.user_pool_id = userpool_id
+        self.client_secret = client_secret
+        self.region = self.user_pool_id.split("_")[0]
+        self.openid_keys = requests.get(
+            f"https://cognito-idp.{self.region}.amazonaws.com/{self.user_pool_id}/.well-known/openid-configuration"
+        ).json()
+        self.authorization_url = self.openid_keys["authorization_endpoint"]
+        self.token_url = self.openid_keys["token_endpoint"]
+        self.refresh_url = self.openid_keys["token_endpoint"]
+        self.user_info_url = self.openid_keys["userinfo_endpoint"]
         self.client_id = client_id
         self.login_prefix = login_prefix
-        self.user_pool_id = userpool_id
-        self.region = self.user_pool_id.split("_")[0]
-        self.keys_url = f"https://cognito-idp.{self.region}.amazonaws.com/{self.user_pool_id}/.well-known/jwks.json"
-
+        self.keys_url = self.openid_keys["jwks_uri"]
         self.keys = requests.get(self.keys_url).json()["keys"]
 
         if not scopes:

@@ -9,7 +9,6 @@ from AWSLoginHandler.flows.pkce.manager import PKCEManager
 api = FastAPI()
 
 oauth_manager = PKCEManager(
-    user_pool_domain="https://auth.bar-tech.uk",
     client_id="17gabj8fffsal3lfb393cv81kc",
     userpool_id="eu-west-2_tMeCEUTj8",
 )
